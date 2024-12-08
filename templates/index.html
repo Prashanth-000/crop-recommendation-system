@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Recommendation System</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Crop Recommendation System 🌾</h1>
+        <form id="cropForm" method="POST" action="/recommend">
+            <label for="nitrogen">Nitrogen Content (kg/ha):</label>
+            <input type="number" id="nitrogen" name="nitrogen" required step="0.1">
+            
+            <label for="phosphorus">Phosphorus Content (kg/ha):</label>
+            <input type="number" id="phosphorus" name="phosphorus" required step="0.1">
+            
+            <label for="potassium">Potassium Content (kg/ha):</label>
+            <input type="number" id="potassium" name="potassium" required step="0.1">
+            
+            <label for="temperature">Temperature (°C):</label>
+            <input type="number" id="temperature" name="temperature" required step="0.1">
+            
+            <label for="humidity">Humidity (%):</label>
+            <input type="number" id="humidity" name="humidity" required step="0.1">
+            
+            <label for="ph">Soil pH:</label>
+            <input type="number" id="ph" name="ph" required step="0.1">
+            
+            <label for="rainfall">Rainfall (mm):</label>
+            <input type="number" id="rainfall" name="rainfall" required step="0.1">
+            
+            <button type="submit">Recommend Crop</button>
+        </form>
+
+        <div class="result" id="result">
+            <!-- Result will be displayed here -->
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('cropForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const formObject = Object.fromEntries(formData.entries());
+
+            const response = await fetch('/recommend', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams(formObject)
+            });
+
+            const result = await response.json();
+
+            const resultDiv = document.getElementById('result');
+            if (result.success) {
+                resultDiv.innerHTML = `Suitable Crop: <strong><em><span class="crop-name">${result.crop.toUpperCase()}</span></em></strong>`;
+            } else {
+                resultDiv.textContent = `Error: ${result.error}`;
+            }
+        });
+    </script>
+</body>
+</html>
